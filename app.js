@@ -23,6 +23,7 @@ let lookat1;
 let lookat2;
 let lookat3;
 let lookat4;
+let lookatnumber=4;
 let lookat = lookAt([0,distance,distance], [0,0,0], [0,1,0]);
 
 function setup(shaders)
@@ -51,6 +52,17 @@ function setup(shaders)
         lookat2 = lookAt([0,distance,0.0001], [0,0,0], [0,1,0]);
         lookat3 = lookAt([-distance,0,0], [0,0,0], [0,1,0]);
         lookat4 = lookAt([0,distance,distance], [0,0,0], [0,1,0]);
+        if(lookatnumber==1){
+            lookat=lookat1;
+        }else if(lookatnumber==2){
+            lookat=lookat2;
+        }else if(lookatnumber==3){
+            lookat=lookat3;
+        }else{
+            lookat= lookat4;
+        }
+
+       // uploadModelView();
     }
 
 
@@ -85,19 +97,24 @@ function setup(shaders)
                 break;
             case '1':
                 lookat = lookat1;
+                lookatnumber=1;
                 break;
             case '2':
                 lookat = lookat2;
+                lookatnumber=2;
                 break;
             case '3':
                 lookat = lookat3;
+                lookatnumber=3;
                 break;
             case '4':
                 lookat = lookat4;
+                lookatnumber=4;
                 break;
             case '+':
                 distance = distance + 2;
                 lookatupload();
+                console.log(distance);
                 break;
             case '-':
                 distance = distance - 2;
