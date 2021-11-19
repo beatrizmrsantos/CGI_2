@@ -18,7 +18,6 @@ let animation = true;   // Animation is running
 
 const VP_DISTANCE = 5.0;
 
-
 function setup(shaders)
 {
     let canvas = document.getElementById("gl-canvas");
@@ -27,6 +26,10 @@ function setup(shaders)
     gl = setupWebGL(canvas);
 
     let program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
+
+   // let programColorFloor= buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader1.frag"]);
+
+   // let program = programFloor;
 
     let mProjection = ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-3*VP_DISTANCE,3*VP_DISTANCE);
 
@@ -137,7 +140,16 @@ function setup(shaders)
         for(let i = -10; i <= 10; i++){
             for(let j = -10; j <= 10; j++){
                 pushMatrix();
-                multTranslation([i*1, 0, j*1]);
+                    multTranslation([i*1, 0, j*1]);
+                   
+
+                if((i+j)%2==0){
+                    program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader1.frag"]);; 
+                }
+                else{
+                    program =buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
+                }
+
                 tiles();
                 popMatrix();
             }
@@ -157,7 +169,7 @@ function setup(shaders)
         
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
-        loadMatrix(lookAt([0,VP_DISTANCE,0.00000001], [0,0,0], [0,1,0]));
+        loadMatrix(lookAt([VP_DISTANCE,VP_DISTANCE,VP_DISTANCE], [0,0,0], [0,1,0]));
 
         pushMatrix();
         drawTiles();
@@ -169,5 +181,5 @@ function setup(shaders)
     }
 }
 
-const urls = ["shader.vert", "shader.frag"];
+const urls = ["shader.vert", "shader.frag", "shader1.frag"];
 loadShadersFromURLS(urls).then(shaders => setup(shaders))
