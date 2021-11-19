@@ -3,6 +3,10 @@ import { ortho, lookAt, flatten } from "../../libs/MV.js";
 import {modelView, loadMatrix, multMatrix, multRotationY, multRotationX, multScale, multTranslation, pushMatrix, popMatrix} from "../../libs/stack.js";
 
 import * as SPHERE from '../../libs/sphere.js';
+import * as CYLINDER from '../../libs/cylinder.js';
+import * as CUBE from '../../libs/cube.js';
+import * as TORUS from '../../libs/torus.js';
+import { scale } from "./libs/MV.js";
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -12,6 +16,7 @@ let speed = 1/60;         // Speed (how many days added to time on each render p
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = true;   // Animation is running
 
+const VP_DISTANCE = 5.0;
 
 
 function setup(shaders)
@@ -33,13 +38,43 @@ function setup(shaders)
     document.onkeydown = function(event) {
         switch(event.key) {
             case 'w':
-                mode = gl.LINES; 
+                 
+                break;
+            case 'W':
+               
                 break;
             case 's':
-                mode = gl.TRIANGLES;
+                
                 break;
-            case 'p':
-                animation = !animation;
+            case 'S':
+                
+                break;
+            case 'a':
+                
+                break;
+            case 'd':
+                
+                break;
+            case 'SPACE':
+                
+                break;
+            case 'UP ARROW':
+                
+                break;
+            case 'DOWN ARROW':
+               
+                break;
+            case '1':
+                
+                break;
+            case '2':
+               
+                break;
+            case '3':
+                
+                break;
+            case '4':
+                
                 break;
             case '+':
                 if(animation) speed *= 1.1;
@@ -52,6 +87,9 @@ function setup(shaders)
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     SPHERE.init(gl);
+    CYLINDER.init(gl);
+    CUBE.init(gl);
+    TORUS.init(gl);
     gl.enable(gl.DEPTH_TEST);   // Enables Z-buffer depth test
     
     window.requestAnimationFrame(render);
@@ -73,6 +111,39 @@ function setup(shaders)
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mModelView"), false, flatten(modelView()));
     }
 
+    function eixoRodas(){
+
+        //multScale([])
+
+        uploadModelView();
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+    function tiles(){
+        
+       // multScale([1/2, 1/10, 1/2]);
+
+        uploadModelView();
+
+        CUBE.draw(gl, program, mode);
+
+    }
+
+    function drawTiles(){
+
+        multScale([1, 1/6, 1]);
+
+        for(let i = -10; i <= 10; i++){
+            for(let j = -10; j <= 10; j++){
+                pushMatrix();
+                multTranslation([i*1, 0, j*1]);
+                tiles();
+                popMatrix();
+            }
+        }
+    }
+
    
     function render(timestamp)
     {
@@ -86,8 +157,11 @@ function setup(shaders)
         
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
-        loadMatrix(lookAt([0,VP_DISTANCE,VP_DISTANCE], [0,0,0], [0,1,0]));
+        loadMatrix(lookAt([0,VP_DISTANCE,0.00000001], [0,0,0], [0,1,0]));
 
+        pushMatrix();
+        drawTiles();
+        popMatrix();
         
 
 
