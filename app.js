@@ -16,7 +16,14 @@ let speed = 1/60;         // Speed (how many days added to time on each render p
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = true;   // Animation is running
 
-const VP_DISTANCE = 5.0;
+let distance = 5.0;
+let proj = 5.0;
+
+let lookat1;
+let lookat2;
+let lookat3;
+let lookat4;
+let lookat = lookAt([0,distance,distance], [0,0,0], [0,1,0]);
 
 function setup(shaders)
 {
@@ -31,12 +38,21 @@ function setup(shaders)
 
    // let program = programFloor;
 
-    let mProjection = ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-3*VP_DISTANCE,3*VP_DISTANCE);
+    let mProjection = ortho(-proj*aspect,proj*aspect, -proj, proj,-3*proj,3*proj);
 
     mode = gl.LINES; 
 
+    lookatupload();
     resize_canvas();
     window.addEventListener("resize", resize_canvas);
+
+    function lookatupload(){
+        lookat1 = lookAt([0,0,distance], [0,0,0], [0,1,0]);
+        lookat2 = lookAt([0,distance,0.0001], [0,0,0], [0,1,0]);
+        lookat3 = lookAt([-distance,0,0], [0,0,0], [0,1,0]);
+        lookat4 = lookAt([0,distance,distance], [0,0,0], [0,1,0]);
+    }
+
 
     document.onkeydown = function(event) {
         switch(event.key) {
@@ -68,22 +84,24 @@ function setup(shaders)
                
                 break;
             case '1':
-                
+                lookat = lookat1;
                 break;
             case '2':
-               
+                lookat = lookat2;
                 break;
             case '3':
-                
+                lookat = lookat3;
                 break;
             case '4':
-                
+                lookat = lookat4;
                 break;
             case '+':
-                if(animation) speed *= 1.1;
+                distance = distance + 2;
+                lookatupload();
                 break;
             case '-':
-                if(animation) speed /= 1.1;
+                distance = distance - 2;
+                lookatupload();
                 break;
         }
     }
@@ -106,7 +124,7 @@ function setup(shaders)
         aspect = canvas.width / canvas.height;
 
         gl.viewport(0,0,canvas.width, canvas.height);
-        mProjection = ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-3*VP_DISTANCE,3*VP_DISTANCE);
+        mProjection = ortho(-proj*aspect,proj*aspect, -proj, proj,-3*proj,3*proj);
     }
 
     function uploadModelView()
@@ -142,14 +160,14 @@ function setup(shaders)
                 pushMatrix();
                     multTranslation([i*1, 0, j*1]);
                    
-
+/*
                 if((i+j)%2==0){
                     program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader1.frag"]);; 
                 }
                 else{
                     program =buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
                 }
-
+*/
                 tiles();
                 popMatrix();
             }
@@ -168,11 +186,18 @@ function setup(shaders)
         gl.useProgram(program);
         
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
+
+        lookatupload();
+
+        //lookat = lookat4;
     
-        loadMatrix(lookAt([VP_DISTANCE,VP_DISTANCE,VP_DISTANCE], [0,0,0], [0,1,0]));
+        loadMatrix(lookat);
 
         pushMatrix();
         drawTiles();
+        popMatrix();
+        pushMatrix();
+        eixoRodas();
         popMatrix();
         
 
