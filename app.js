@@ -12,34 +12,6 @@ let speed = 1/60;         // Speed (how many days added to time on each render p
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = true;   // Animation is running
 
-const PLANET_SCALE = 10;    // scale that will apply to each planet and satellite
-const ORBIT_SCALE = 1/60;   // scale that will apply to each orbit around the sun
-
-const SUN_DIAMETER = 1391900;
-const SUN_DAY = 24.47; // At the equator. The poles are slower as the sun is gaseous
-
-const MERCURY_DIAMETER = 4866*PLANET_SCALE;
-const MERCURY_ORBIT = 57950000*ORBIT_SCALE;
-const MERCURY_YEAR = 87.97;
-const MERCURY_DAY = 58.646;
-
-const VENUS_DIAMETER = 12106*PLANET_SCALE;
-const VENUS_ORBIT = 108110000*ORBIT_SCALE;
-const VENUS_YEAR = 224.70;
-const VENUS_DAY = 243.018;
-
-const EARTH_DIAMETER = 12742*PLANET_SCALE;
-const EARTH_ORBIT = 149570000*ORBIT_SCALE;
-const EARTH_YEAR = 365.26;
-const EARTH_DAY = 0.99726968;
-
-const MOON_DIAMETER = 3474*PLANET_SCALE;
-const MOON_ORBIT = 363396*ORBIT_SCALE*60;
-const MOON_YEAR = 28;
-const MOON_DAY = 0;
-
-const VP_DISTANCE = EARTH_ORBIT;
-
 
 
 function setup(shaders)
@@ -101,77 +73,10 @@ function setup(shaders)
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mModelView"), false, flatten(modelView()));
     }
 
-    function Sun(){
-        // Don't forget to scale the sun, rotate it around the y axis at the correct speed
-        multRotationY(360*time/SUN_DAY);
-        multScale([SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
-
-        // Send the current modelview matrix to the vertex shader
-        uploadModelView();
-
-        // Draw a sphere representing the sun
-        SPHERE.draw(gl, program, mode);
-    }
-
-    function Mercury(){
-        
-        multRotationY(360*time/MERCURY_DAY);
-       
-        multScale([MERCURY_DIAMETER, MERCURY_DIAMETER, MERCURY_DIAMETER]);
-
-        uploadModelView();
-
-        SPHERE.draw(gl, program, mode);
-
-    }
-
-    function Venus(){
-        
-        multRotationY(360*time/VENUS_DAY);
-       
-        multScale([VENUS_DIAMETER, VENUS_DIAMETER, VENUS_DIAMETER]);
-
-        uploadModelView();
-
-        SPHERE.draw(gl, program, mode);
-
-    }
-
-    function EarthMoon(){
-
-        pushMatrix();
-            Earth();
-        popMatrix();
-        pushMatrix();
-            multRotationY(360*time/MOON_YEAR);
-            multTranslation([MOON_ORBIT, 0, 0]);
-            Moon();
-        popMatrix();
-
-    }
-
-    function Earth(){
-
-        multRotationY(360*time/EARTH_DAY);
-       
-        multScale([EARTH_DIAMETER, EARTH_DIAMETER, EARTH_DIAMETER]);
-
-        uploadModelView();
-
-        SPHERE.draw(gl, program, mode);
-    }
-
-    function Moon(){
-       
-        multScale([MOON_DIAMETER, MOON_DIAMETER, MOON_DIAMETER]);
-
-        uploadModelView();
-
-        SPHERE.draw(gl, program, mode);
-    }
-
-    function render()
+   
+    function render(timestamp)
     {
+
         if(animation) time += speed;
         window.requestAnimationFrame(render);
 
@@ -183,24 +88,7 @@ function setup(shaders)
     
         loadMatrix(lookAt([0,VP_DISTANCE,VP_DISTANCE], [0,0,0], [0,1,0]));
 
-        pushMatrix();
-            Sun();
-        popMatrix();
-        pushMatrix();
-            multRotationY(360*time/MERCURY_YEAR);
-            multTranslation([MERCURY_ORBIT, 0, 0]);
-            Mercury();
-        popMatrix();
-        pushMatrix();
-            multRotationY(360*time/VENUS_YEAR);
-            multTranslation([VENUS_ORBIT, 0, 0]);
-            Venus();
-        popMatrix();
-        pushMatrix();
-            multRotationY(360*time/EARTH_YEAR);
-            multTranslation([EARTH_ORBIT, 0, 0]);
-            EarthMoon();
-        popMatrix();
+        
 
 
 
