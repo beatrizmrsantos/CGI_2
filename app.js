@@ -163,8 +163,13 @@ function setup(shaders)
 
     //ligacao cubo com cilindro
     function canon(){
+
         pushMatrix();
             cube();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0.1,-1.4]);
+            pipe();
         popMatrix();
     }
 
@@ -184,6 +189,8 @@ function setup(shaders)
 
         multScale([3,1.2,6]);
 
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
+
         uploadModelView(program);
 
         CUBE.draw(gl, program, mode);
@@ -194,6 +201,8 @@ function setup(shaders)
 
         multScale([2,1/2,5]);
 
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
+
         uploadModelView(program);
 
         CUBE.draw(gl, program, mode);
@@ -203,7 +212,9 @@ function setup(shaders)
      //ligacao canhao e body
      function cube(){
 
-        multScale([0.5,0.5,0.5]);
+        multScale([0.4,0.4,0.4]);
+
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
 
         uploadModelView(program);
 
@@ -215,6 +226,8 @@ function setup(shaders)
 
         multScale([0.7,0.3,0.7]);
 
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
+
         uploadModelView(program);
 
         CYLINDER.draw(gl, program, mode);
@@ -224,6 +237,8 @@ function setup(shaders)
 
         multScale([2,0.7,2]);
 
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(255/256,128/256,0.0,1.0)));
+
         uploadModelView(program);
 
         CYLINDER.draw(gl, program, mode);
@@ -231,6 +246,10 @@ function setup(shaders)
 
     //cilindro para disparar
     function pipe(){
+
+        multRotationX(-85)
+
+        multScale([1/6,2.6,1/6]);
 
         uploadModelView(program);
 
@@ -311,6 +330,8 @@ function setup(shaders)
 
         multScale([1, 1.5, 1]);
 
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.5,0.5,0.5,1.0)));
+
         uploadModelView(program);
 
         TORUS.draw(gl, program, mode);
@@ -319,6 +340,8 @@ function setup(shaders)
     function sphere(){
 
         multScale([0.4,0.4,0.4]);
+
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
 
         uploadModelView(program);
 
@@ -355,10 +378,10 @@ function setup(shaders)
                     multTranslation([i*1, 0, j*1]);
                    
                 if((i+j)%2==0){
-                    gl.uniform4fv(gl.getUniformLocation(programTiles, "color"), flatten(vec4(1.0,1.0,1.0,1.0)));
+                    gl.uniform4fv(gl.getUniformLocation(programTiles, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
                 }
                 else{
-                    gl.uniform4fv(gl.getUniformLocation(programTiles, "color"), flatten(vec4(0.0,1.0,1.0,1.0)));
+                    gl.uniform4fv(gl.getUniformLocation(programTiles, "ucolor"), flatten(vec4(0.0,1.0,1.0,1.0)));
                 }
 
 
