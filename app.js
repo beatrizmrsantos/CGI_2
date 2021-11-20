@@ -116,7 +116,7 @@ function setup(shaders)
                 updateProjection();
                 break;
             case '-':
-                zoom++;
+                zoom--;
                 updateProjection();
                 break;
         }
@@ -206,10 +206,10 @@ function setup(shaders)
         gl.useProgram(programTiles);
         gl.uniformMatrix4fv(gl.getUniformLocation(programTiles, "mProjection"), false, flatten(mProjection));
 
-        gl.useProgram(program);
-        gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
+       // gl.useProgram(program);
+        //gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
 
-        lookatupload();
+        //lookatupload();
     
         loadMatrix(lookat);
 
@@ -217,13 +217,13 @@ function setup(shaders)
         drawTiles(programTiles);
         popMatrix();
 
-        gl.useProgram(program);
+        /*gl.useProgram(program);
         
         pushMatrix();
         eixoRodas(program);
         popMatrix();
         
-
+*/
 
 
     }
