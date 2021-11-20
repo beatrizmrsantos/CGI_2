@@ -151,15 +151,21 @@ function setup(shaders)
             head();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.5,-0.5])
+            multTranslation([0,0.5,-0.5]);
             atenna();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0,-1]);
+            canon();
         popMatrix();
     }
 
 
     //ligacao cubo com cilindro
     function canon(){
-
+        pushMatrix();
+            cube();
+        popMatrix();
     }
 
     function body(){
@@ -197,7 +203,7 @@ function setup(shaders)
      //ligacao canhao e body
      function cube(){
 
-        multScale();
+        multScale([0.5,0.5,0.5]);
 
         uploadModelView(program);
 
