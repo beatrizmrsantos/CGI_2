@@ -21,10 +21,10 @@ let animation = true;   // Animation is running
 let zoom = 1.0;
 const DISTANCE = 5.0;
 
-let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
+let lookat1 = lookAt([0,0,-DISTANCE], [0,0,0], [0,1,0]);
 let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
 let lookat3 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
-let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
+let lookat4 = lookAt([-DISTANCE,DISTANCE,-DISTANCE], [0,0,0], [0,1,0]);
 
 let lookat = lookat3;
 
@@ -35,8 +35,8 @@ function setup(shaders)
 
     gl = setupWebGL(canvas);
 
-    programTiles = buildProgramFromSources(gl, shaders["shaderTiles.vert"], shaders["shaderTiles.frag"]);
     program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
+    
 
     let mProjection = ortho(-DISTANCE*aspect/zoom,DISTANCE*aspect/zoom, -DISTANCE/zoom, DISTANCE/zoom,-3*DISTANCE/zoom,3*DISTANCE/zoom);
 
@@ -132,6 +132,19 @@ function setup(shaders)
         gl.uniformMatrix4fv(gl.getUniformLocation(p, "mModelView"), false, flatten(modelView()));
     }
 
+    //tanque todo
+    function tank(){
+
+        pushMatrix();
+            lowerBody();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0, 0.2, 0]);
+            upperBody();
+        popMatrix();
+    }
+
+    //corpo superior do tanque
     function upperBody(){
         
         pushMatrix();
@@ -173,6 +186,56 @@ function setup(shaders)
         popMatrix();
     }
 
+      //cilindro para disparar
+      function pipe(){
+
+        multRotationX(-85)
+
+        multScale([1/6,2.6,1/6]);
+
+        uploadModelView(program);
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+    //cubo de ligacao canhao e body
+    function cube(){
+
+        multScale([0.4,0.4,0.4]);
+
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
+
+        uploadModelView(program);
+
+        CUBE.draw(gl, program, mode);
+    }
+
+    //cilindro pequeno
+    function atenna(){
+
+        multScale([0.7,0.3,0.7]);
+
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
+
+        uploadModelView(program);
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+    //cilindro grande
+    function head(){
+
+        multScale([2,0.7,2]);
+
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(255/256,128/256,0.0,1.0)));
+
+        uploadModelView(program);
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+
+    //dois cubos juntos
     function body(){
 
         pushMatrix();
@@ -209,58 +272,8 @@ function setup(shaders)
 
     }
 
-     //ligacao canhao e body
-     function cube(){
 
-        multScale([0.4,0.4,0.4]);
-
-        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
-
-        uploadModelView(program);
-
-        CUBE.draw(gl, program, mode);
-    }
-
-    //cilindro pequeno
-    function atenna(){
-
-        multScale([0.7,0.3,0.7]);
-
-        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
-
-        uploadModelView(program);
-
-        CYLINDER.draw(gl, program, mode);
-    }
-
-    function head(){
-
-        multScale([2,0.7,2]);
-
-        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(255/256,128/256,0.0,1.0)));
-
-        uploadModelView(program);
-
-        CYLINDER.draw(gl, program, mode);
-    }
-
-    //cilindro para disparar
-    function pipe(){
-
-        multRotationX(-85)
-
-        multScale([1/6,2.6,1/6]);
-
-        uploadModelView(program);
-
-        CYLINDER.draw(gl, program, mode);
-    }
-
-
-   
-
-    
-
+   //5 eixos com rodas
     function lowerBody(){
 
         pushMatrix();
@@ -286,6 +299,7 @@ function setup(shaders)
 
     }
 
+    //eixo com duas rodas
     function axisWheels(){
 
         multScale([0.6, 0.6, 0.6]);
@@ -315,6 +329,7 @@ function setup(shaders)
         CYLINDER.draw(gl, program, mode);
     }
 
+    //roda toda
     function wheel(){
 
         multRotationZ(90);
@@ -348,24 +363,17 @@ function setup(shaders)
         SPHERE.draw(gl, program, mode);
     }
 
+
+
     function tiles(){
 
-        uploadModelView(programTiles);
+        uploadModelView(program);
 
-        CUBE.draw(gl, programTiles, mode);
+        CUBE.draw(gl, program, mode);
 
     }
 
-    function tank(){
 
-        pushMatrix();
-            lowerBody();
-        popMatrix();
-        pushMatrix();
-            multTranslation([0, 0.2, 0]);
-            upperBody();
-        popMatrix();
-    }
 
     function drawTiles(){
 
@@ -377,15 +385,14 @@ function setup(shaders)
                 pushMatrix();
                     multTranslation([i*1, 0, j*1]);
                    
-                if((i+j)%2==0){
-                    gl.uniform4fv(gl.getUniformLocation(programTiles, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
-                }
-                else{
-                    gl.uniform4fv(gl.getUniformLocation(programTiles, "ucolor"), flatten(vec4(0.0,1.0,1.0,1.0)));
-                }
+                    if((i+j)%2==0){
+                        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
+                    }
+                    else{
+                        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,1.0,1.0)));
+                    }
 
-
-                tiles(programTiles);
+                    tiles();
                 popMatrix();
             }
         }
@@ -400,24 +407,15 @@ function setup(shaders)
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
-        
-        gl.useProgram(programTiles);
-        gl.uniformMatrix4fv(gl.getUniformLocation(programTiles, "mProjection"), false, flatten(mProjection));
 
         gl.useProgram(program);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
         loadMatrix(lookat);
 
-        gl.useProgram(programTiles);
-
         pushMatrix();
-            drawTiles(programTiles);
+            drawTiles();
         popMatrix();
-
-
-        gl.useProgram(program);
-        
         pushMatrix();
             multTranslation([0,0.52,0])
             tank();
@@ -429,5 +427,5 @@ function setup(shaders)
     }
 }
 
-const urls = ["shaderTiles.vert", "shaderTiles.frag", "shader.vert", "shader.frag"];
+const urls = ["shader.vert", "shader.frag"];
 loadShadersFromURLS(urls).then(shaders => setup(shaders))
