@@ -1,6 +1,6 @@
 import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
 import { ortho, lookAt, flatten, vec4 } from "../../libs/MV.js";
-import {modelView, loadMatrix, multMatrix, multRotationY, multRotationX, multScale, multTranslation, pushMatrix, popMatrix} from "../../libs/stack.js";
+import {modelView, loadMatrix, multMatrix, multRotationY, multRotationX, multRotationZ, multScale, multTranslation, pushMatrix, popMatrix} from "../../libs/stack.js";
 
 import * as SPHERE from '../../libs/sphere.js';
 import * as CYLINDER from '../../libs/cylinder.js';
@@ -24,9 +24,9 @@ const DISTANCE = 5.0;
 let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
 let lookat3 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
-let lookat4 = lookAt([0,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
+let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 
-let lookat = lookat4;
+let lookat = lookat3;
 
 function setup(shaders)
 {
@@ -80,32 +80,26 @@ function setup(shaders)
                 break;
             case '1':
                 lookat = lookat1;
-                lookatnumber=1;
                 break;
             case '2':
                 lookat = lookat2;
-                lookatnumber=2;
                 break;
             case '3':
                 lookat = lookat3;
-                lookatnumber=3;
                 break;
             case '4':
                 lookat = lookat4;
-                lookatnumber=4;
                 break;
             case '+':
                 if(zoom<1.4){
                     zoom = zoom + 0.10;
                 }
-                console.log(zoom);
                 updateProjection();
                 break;
             case '-':
                if(zoom>0.11){
                 zoom = zoom - 0.10;
                }
-               console.log(zoom);
                 updateProjection();
                
                 break;
@@ -138,30 +132,215 @@ function setup(shaders)
         gl.uniformMatrix4fv(gl.getUniformLocation(p, "mModelView"), false, flatten(modelView()));
     }
 
-    function eixoRodas(p){
+    function upperBody(){
+        
+        pushMatrix();
+            body();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,1.8,0]);
+            headSet();
+        popMatrix();
 
-        //multScale([])
+    }
 
-        uploadModelView(p);
+     //conjunto que roda
+     function headSet(){
+
+        pushMatrix();
+            head();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0.5,-0.5])
+            atenna();
+        popMatrix();
+    }
+
+
+    //ligacao cubo com cilindro
+    function canon(){
+
+    }
+
+    function body(){
+
+        pushMatrix();
+            bodySmall();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0.85,0])
+            bodyBig();
+        popMatrix();
+    }
+
+    //cubo grande do corpo do tanque
+    function bodyBig(){
+
+        multScale([3,1.2,6]);
+
+        uploadModelView(program);
+
+        CUBE.draw(gl, program, mode);
+    }
+
+    //cubo pequeno do corpo do tanque
+    function bodySmall(){
+
+        multScale([2,1/2,5]);
+
+        uploadModelView(program);
+
+        CUBE.draw(gl, program, mode);
+
+    }
+
+     //ligacao canhao e body
+     function cube(){
+
+        multScale();
+
+        uploadModelView(program);
+
+        CUBE.draw(gl, program, mode);
+    }
+
+    //cilindro pequeno
+    function atenna(){
+
+        multScale([0.7,0.3,0.7]);
+
+        uploadModelView(program);
 
         CYLINDER.draw(gl, program, mode);
     }
 
-    function tiles(p){
+    function head(){
+
+        multScale([2,0.7,2]);
+
+        uploadModelView(program);
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+    //cilindro para disparar
+    function pipe(){
+
+        uploadModelView(program);
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+
+   
+
+    
+
+    function lowerBody(){
+
+        pushMatrix();
+            axisWheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0,1]);
+            axisWheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0,2]);
+            axisWheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0,-1]);
+            axisWheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0,0,-2]);
+            axisWheels();
+        popMatrix();
+
+
+    }
+
+    function axisWheels(){
+
+        multScale([0.6, 0.6, 0.6]);
+
+        pushMatrix();
+            multTranslation([2.2,0,0]);
+            wheel();
+        popMatrix();
+        pushMatrix();
+            axis();
+        popMatrix();
+        pushMatrix();
+            multTranslation([-2.2,0,0]);
+            wheel();
+        popMatrix();  
+
+
+    }
+
+    function axis(){
+
+        multRotationZ(-90);
+        multScale([1/4,4,1/4]);
+
+        uploadModelView(program);
+
+        CYLINDER.draw(gl, program, mode);
+    }
+
+    function wheel(){
+
+        multRotationZ(90);
+
+        pushMatrix();
+            torus();
+            sphere();
+        popMatrix();
         
-       // multScale([1/2, 1/10, 1/2]);
+    }
 
-        uploadModelView(p);
+    function torus(){
 
-        CUBE.draw(gl, p, mode);
+        multScale([1, 1.5, 1]);
 
+        uploadModelView(program);
+
+        TORUS.draw(gl, program, mode);
+    }
+
+    function sphere(){
+
+        multScale([0.4,0.4,0.4]);
+
+        uploadModelView(program);
+
+        SPHERE.draw(gl, program, mode);
+    }
+
+    function tiles(){
+
+        uploadModelView(programTiles);
+
+        CUBE.draw(gl, programTiles, mode);
+
+    }
+
+    function tank(){
+
+        pushMatrix();
+            lowerBody();
+        popMatrix();
+        pushMatrix();
+            multTranslation([0, 0.2, 0]);
+            upperBody();
+        popMatrix();
     }
 
     function drawTiles(){
 
         multScale([1, 1/6, 1]);
-
-        gl.useProgram(programTiles);
 
         for(let i = -10; i <= 10; i++){
             for(let j = -10; j <= 10; j++){
@@ -196,22 +375,26 @@ function setup(shaders)
         gl.useProgram(programTiles);
         gl.uniformMatrix4fv(gl.getUniformLocation(programTiles, "mProjection"), false, flatten(mProjection));
 
-       // gl.useProgram(program);
-        //gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
+        gl.useProgram(program);
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
         loadMatrix(lookat);
 
+        gl.useProgram(programTiles);
+
         pushMatrix();
-        drawTiles(programTiles);
+            drawTiles(programTiles);
         popMatrix();
 
-        /*gl.useProgram(program);
+
+        gl.useProgram(program);
         
         pushMatrix();
-        eixoRodas(program);
+            multTranslation([0,0.52,0])
+            tank();
         popMatrix();
+
         
-*/
 
 
     }
