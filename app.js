@@ -18,7 +18,7 @@ let speed = 1/60;         // Speed (how many days added to time on each render p
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = true;   // Animation is running
 
-let zoom = 0.3;
+let zoom = 1.0;
 const DISTANCE = 5.0;
 
 let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
@@ -112,12 +112,19 @@ function setup(shaders)
                 lookatnumber=4;
                 break;
             case '+':
-                zoom = zoom + 0.3;
+                if(zoom<1.4){
+                    zoom = zoom + 0.10;
+                }
+                console.log(zoom);
                 updateProjection();
                 break;
             case '-':
-                zoom = zoom - 0.3;
+               if(zoom>0.11){
+                zoom = zoom - 0.10;
+               }
+               console.log(zoom);
                 updateProjection();
+               
                 break;
         }
     }
