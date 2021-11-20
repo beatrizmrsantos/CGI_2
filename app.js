@@ -26,7 +26,6 @@ let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
 let lookat3 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
 let lookat4 = lookAt([0,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 
-let lookatnumber = 4;
 let lookat = lookat4;
 
 function setup(shaders)
@@ -50,21 +49,6 @@ function setup(shaders)
     function updateProjection(){
         mProjection = ortho(-DISTANCE*aspect/zoom,DISTANCE*aspect/zoom, -DISTANCE/zoom, DISTANCE/zoom,-3*DISTANCE/zoom,3*DISTANCE/zoom);
     }
-
-    function lookatupload(){
-        if(lookatnumber==1){
-            lookat=lookat1;
-        }else if(lookatnumber==2){
-            lookat=lookat2;
-        }else if(lookatnumber==3){
-            lookat=lookat3;
-        }else{
-            lookat= lookat4;
-        }
-
-       // uploadModelView();
-    }
-
 
     document.onkeydown = function(event) {
         switch(event.key) {
@@ -215,8 +199,6 @@ function setup(shaders)
 
        // gl.useProgram(program);
         //gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
-
-        //lookatupload();
     
         loadMatrix(lookat);
 
