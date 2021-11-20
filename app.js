@@ -41,8 +41,7 @@ function setup(shaders)
     let mProjection = ortho(-DISTANCE*aspect/zoom,DISTANCE*aspect/zoom, -DISTANCE/zoom, DISTANCE/zoom,-3*DISTANCE/zoom,3*DISTANCE/zoom);
 
     mode = gl.LINES; 
-
-    lookatupload();
+    
     resize_canvas();
     window.addEventListener("resize", resize_canvas);
 
