@@ -18,6 +18,7 @@ let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = true;   // Animation is running
 let rotationCannon = 0;
 let rotationHead = 0;
+let movement = 0;
 
 let zoom = 1.0;
 const DISTANCE = 5.0;
@@ -78,10 +79,12 @@ function setup(shaders)
                 
                 break;
             case 'UP ARROW':
-               
+                movement+=1;
+                console.log(movement);
                 break;
             case 'DOWN ARROW':
-               
+                movement-=1;
+                console.log(movement);
                 break;
             case '1':
                 lookat = lookat1;
@@ -140,6 +143,8 @@ function setup(shaders)
 
     //tanque todo
     function tank(){
+
+        multTranslation([movement,0,0]);
 
         pushMatrix();
             lowerBody();
