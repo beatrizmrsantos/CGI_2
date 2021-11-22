@@ -53,15 +53,15 @@ function setup(shaders)
         switch(event.key) {
             case 'w':
                 if(rotationCannon>-60){
-                    rotationCannon -=2;
+                    rotationCannon -=1;
                 }
                 break;
             case 'W':
                 mode = gl.LINES;
                 break;
             case 's':
-                if(rotationCannon<16){
-                    rotationCannon +=2;
+                if(rotationCannon<7){
+                    rotationCannon +=1;
                }
                 break;
             case 'S':
@@ -205,7 +205,7 @@ function setup(shaders)
             cube();
         popMatrix();
         pushMatrix();
-            multTranslation([-1.35,0.2,0]);
+            multTranslation([-1.4,0,0]);
             bulletPipe();
         popMatrix();
     }
@@ -213,7 +213,7 @@ function setup(shaders)
     //pipe com o projetil
     function bulletPipe(){
 
-        multRotationZ(80)
+        multRotationZ(90)
 
         pushMatrix();
             pipe();
