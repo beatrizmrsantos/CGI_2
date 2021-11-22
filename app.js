@@ -25,12 +25,12 @@ let bullets = [];
 let zoom = 1.0;
 const DISTANCE = 5.0;
 
-let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
+/*let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
 let lookat3 = lookAt([DISTANCE,0,0], [0,0,0], [0,1,0]);
 let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 
-let lookat = lookat3;
+let lookat = lookat3;*/
 
 function setup(shaders)
 {
@@ -77,18 +77,18 @@ function setup(shaders)
                 shoot = true;
                 console.log(shoot);
                 break;
-            case 'ArrowUp':
+            case 'ArrowDown':
                 if(movement<8){
                     movement+=0.05;
                 }
                 break;
-            case 'ArrowDown':
+            case 'ArrowUp':
                 if(movement>-8){
                     movement-=0.05;
                 }
                 break;
             case '1':
-                loadMatrix(lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]));
+                loadMatrix(lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]));
                 //lookat = lookat1;
                 break;
             case '2':
@@ -96,7 +96,7 @@ function setup(shaders)
                 //lookat = lookat2;
                 break;
             case '3':
-                loadMatrix(lookAt([DISTANCE,0,0], [0,0,0], [0,1,0]));
+                loadMatrix(lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]));
                 //lookat = lookat3;
                 break;
             case '4':
@@ -152,7 +152,7 @@ function setup(shaders)
     //tanque todo
     function tank(){
 
-        multTranslation([0,0,movement]);
+        multTranslation([movement,0,0]);
 
         pushMatrix();
             lowerBody();
@@ -185,11 +185,11 @@ function setup(shaders)
             head();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.5,0.5]);
+            multTranslation([-0.5,0.5,0]);
             atenna();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0,1]);
+            multTranslation([-1,0,0]);
             canon();
         popMatrix();
        
@@ -199,13 +199,13 @@ function setup(shaders)
     //ligacao cubo com cilindro
     function canon(){
 
-        multRotationX(rotationCannon);
+        multRotationZ(rotationCannon);
 
         pushMatrix();
             cube();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.2,1.35]);
+            multTranslation([-1.35,0.2,0]);
             bulletPipe();
         popMatrix();
     }
@@ -213,7 +213,7 @@ function setup(shaders)
     //pipe com o projetil
     function bulletPipe(){
 
-        multRotationX(80)
+        multRotationZ(80)
 
         pushMatrix();
             pipe();
@@ -286,6 +286,8 @@ function setup(shaders)
 
     //dois cubos juntos
     function body(){
+        
+        multRotationY(90);
 
         pushMatrix();
             bodySmall();
@@ -329,19 +331,19 @@ function setup(shaders)
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0,1]);
+            multTranslation([1,0,0]);
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0,2]);
+            multTranslation([2,0,0]);
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0,-1]);
+            multTranslation([-1,0,0]);
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0,-2]);
+            multTranslation([-2,0,0]);
             axisWheels();
         popMatrix();
 
@@ -351,19 +353,19 @@ function setup(shaders)
     //eixo com duas rodas
     function axisWheels(){
 
-        multRotationX((movement/(2*3.14*0.45))*360);
+        multRotationZ((movement/(2*3.14*0.45))*360);
         multScale([0.6, 0.6, 0.6]);
 
 
         pushMatrix();
-            multTranslation([2.2,0,0]);
+            multTranslation([0,0,2.2]);
             wheel();
         popMatrix();
         pushMatrix();
             axis();
         popMatrix();
         pushMatrix();
-            multTranslation([-2.2,0,0]);
+            multTranslation([0,0,-2.2]);
             wheel();
         popMatrix();  
 
@@ -372,7 +374,7 @@ function setup(shaders)
 
     function axis(){
 
-        multRotationZ(-90);
+        multRotationX(90);
         multScale([1/4,4,1/4]);
 
         uploadModelView();
@@ -383,7 +385,7 @@ function setup(shaders)
     //roda toda
     function wheel(){
 
-        multRotationZ(90);
+        multRotationX(90);
 
         pushMatrix();
             torus();
