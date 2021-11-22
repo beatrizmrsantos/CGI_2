@@ -78,12 +78,17 @@ function setup(shaders)
             case 'SPACE':
                 
                 break;
-            case 'UP ARROW':
-                movement+=1;
+            case 'ArrowUp':
+                if(movement<8){
+                    movement+=0.1;
+                }
+               
                 console.log(movement);
                 break;
-            case 'DOWN ARROW':
-                movement-=1;
+            case 'ArrowDown':
+                if(movement>-8){
+                    movement-=0.1;
+                }
                 console.log(movement);
                 break;
             case '1':
@@ -99,7 +104,7 @@ function setup(shaders)
                 lookat = lookat4;
                 break;
             case '+':
-                if(zoom<1.4){
+                if(zoom<5){
                     zoom = zoom + 0.10;
                 }
                 updateProjection();
@@ -144,13 +149,13 @@ function setup(shaders)
     //tanque todo
     function tank(){
 
-        multTranslation([movement,0,0]);
+        multTranslation([0,0,movement]);
 
         pushMatrix();
             lowerBody();
         popMatrix();
         pushMatrix();
-            multTranslation([0, 0.2, 0]);
+            multTranslation([0, 0.27, 0]);
             upperBody();
         popMatrix();
     }
@@ -162,7 +167,7 @@ function setup(shaders)
             body();
         popMatrix();
         pushMatrix();
-            multTranslation([0,1.8,0]);
+            multTranslation([0,1.75,0]);
             headSet();
         popMatrix();
 
@@ -257,7 +262,7 @@ function setup(shaders)
             bodySmall();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.85,0])
+            multTranslation([0,0.8,0])
             bodyBig();
         popMatrix();
     }
@@ -277,7 +282,7 @@ function setup(shaders)
     //cubo pequeno do corpo do tanque
     function bodySmall(){
 
-        multScale([2,1/2,5]);
+        multScale([2,1/2.5,5]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
 
@@ -317,7 +322,10 @@ function setup(shaders)
     //eixo com duas rodas
     function axisWheels(){
 
+        multRotationX((movement/(2*3.14*0.45))*360);
+
         multScale([0.6, 0.6, 0.6]);
+
 
         pushMatrix();
             multTranslation([2.2,0,0]);
@@ -432,7 +440,7 @@ function setup(shaders)
             drawTiles();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.52,0])
+            multTranslation([0,0.51,0])
             tank();
         popMatrix();
 
