@@ -19,6 +19,8 @@ let animation = true;   // Animation is running
 let rotationCannon = 0;
 let rotationHead = 0;
 let movement = 0;
+let shoot = false;
+let bullets = [];
 
 let zoom = 1.0;
 const DISTANCE = 5.0;
@@ -47,17 +49,12 @@ function setup(shaders)
     resize_canvas();
     window.addEventListener("resize", resize_canvas);
 
-    function updateProjection(){
-        mProjection = ortho(-DISTANCE*aspect/zoom,DISTANCE*aspect/zoom, -DISTANCE/zoom, DISTANCE/zoom,-3*DISTANCE/zoom,3*DISTANCE/zoom);
-    }
-
     document.onkeydown = function(event) {
         switch(event.key) {
             case 'w':
                 if(rotationCannon>-60){
                     rotationCannon -=2;
                 }
-               console.log(rotationCannon);
                 break;
             case 'W':
                 mode = gl.LINES;
@@ -66,7 +63,6 @@ function setup(shaders)
                 if(rotationCannon<16){
                     rotationCannon +=2;
                }
-               console.log(rotationCannon);
                 break;
             case 'S':
                 mode = gl.TRIANGLES;
@@ -77,8 +73,9 @@ function setup(shaders)
             case 'd':
                 rotationHead -=2;
                 break;
-            case 'SPACE':
-                
+            case ' ':
+                shoot = true;
+                console.log(shoot);
                 break;
             case 'ArrowUp':
                 if(movement<8){
@@ -91,26 +88,30 @@ function setup(shaders)
                 }
                 break;
             case '1':
-                lookat = lookat1;
+                loadMatrix(lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]));
+                //lookat = lookat1;
                 break;
             case '2':
-                lookat = lookat2;
+                loadMatrix(lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]));
+                //lookat = lookat2;
                 break;
             case '3':
-                lookat = lookat3;
+                loadMatrix(lookAt([DISTANCE,0,0], [0,0,0], [0,1,0]));
+                //lookat = lookat3;
                 break;
             case '4':
-                lookat = lookat4;
+                loadMatrix(lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]));
+                //lookat = lookat4;
                 break;
             case '+':
-                if(zoom<5){
-                    zoom = zoom + 0.10;
+                if(zoom<30){
+                    zoom = zoom * 1.1;
                 }
                 updateProjection();
                 break;
             case '-':
-               if(zoom>0.11){
-                zoom = zoom - 0.10;
+               if(zoom>0.003){
+                zoom = zoom * 0.9;
                }
                 updateProjection();
                
@@ -127,6 +128,9 @@ function setup(shaders)
     
     window.requestAnimationFrame(render);
 
+    function updateProjection(){
+        mProjection = ortho(-DISTANCE*aspect/zoom,DISTANCE*aspect/zoom, -DISTANCE/zoom, DISTANCE/zoom,-3*DISTANCE/zoom,3*DISTANCE/zoom);
+    }
 
     function resize_canvas(event)
     {
@@ -188,6 +192,7 @@ function setup(shaders)
             multTranslation([0,0,1]);
             canon();
         popMatrix();
+       
     }
 
 
@@ -201,14 +206,39 @@ function setup(shaders)
         popMatrix();
         pushMatrix();
             multTranslation([0,0.2,1.35]);
+            bulletPipe();
+        popMatrix();
+    }
+
+    //pipe com o projetil
+    function bulletPipe(){
+
+        multRotationX(80)
+
+        pushMatrix();
             pipe();
         popMatrix();
+        pushMatrix();
+            multTranslation([0,1.225,0]);
+            bullet();
+        popMatrix();
+
+    }
+
+    function bullet(){
+
+        multScale([1/5,1/5,1/5]);
+
+        gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,0.0,0.0,1.0)));
+
+        uploadModelView();
+
+        SPHERE.draw(gl, program, mode);
+
     }
 
       //cilindro para disparar
       function pipe(){
-
-        multRotationX(80)
 
         multScale([1/6,2.6,1/6]);
 
@@ -322,7 +352,6 @@ function setup(shaders)
     function axisWheels(){
 
         multRotationX((movement/(2*3.14*0.45))*360);
-
         multScale([0.6, 0.6, 0.6]);
 
 
@@ -433,7 +462,7 @@ function setup(shaders)
         gl.useProgram(program);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
-        loadMatrix(lookat);
+        //loadMatrix(lookat);
 
         pushMatrix();
             drawTiles();
