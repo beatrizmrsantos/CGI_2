@@ -78,14 +78,14 @@ function setup(shaders)
             case 'SPACE':
                 
                 break;
-            case 'ArrowUp':
+            case 'ArrowDown':
                 if(movement<8){
                     movement+=0.1;
                 }
                
                 console.log(movement);
                 break;
-            case 'ArrowDown':
+            case 'ArrowUp':
                 if(movement>-8){
                     movement-=0.1;
                 }
