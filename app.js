@@ -6,17 +6,18 @@ import * as SPHERE from '../../libs/sphere.js';
 import * as CYLINDER from '../../libs/cylinder.js';
 import * as CUBE from '../../libs/cube.js';
 import * as TORUS from '../../libs/torus.js';
-import { scale } from "./libs/MV.js";
+import { rotateY, rotateZ, scale } from "./libs/MV.js";
 
 /** @type WebGLRenderingContext */
 let gl;
 let program;
-let programTiles;
 
 let time = 0;           // Global simulation time in days
 let speed = 1/60;         // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = true;   // Animation is running
+let rotationCannon = 0;
+let rotationHead = 0;
 
 let zoom = 1.0;
 const DISTANCE = 5.0;
@@ -52,28 +53,32 @@ function setup(shaders)
     document.onkeydown = function(event) {
         switch(event.key) {
             case 'w':
-                 
+                if(rotationCannon<60){
+                     rotationCannon +=2;
+                }
                 break;
             case 'W':
                 mode = gl.LINES;
                 break;
             case 's':
-                
+                if(rotationCannon>-12){
+                    rotationCannon -=2;
+                }
                 break;
             case 'S':
                 mode = gl.TRIANGLES;
                 break;
             case 'a':
-                
+                rotationHead +=2;
                 break;
             case 'd':
-                
+                rotationHead -=2;
                 break;
             case 'SPACE':
                 
                 break;
             case 'UP ARROW':
-                
+               
                 break;
             case 'DOWN ARROW':
                
@@ -127,10 +132,11 @@ function setup(shaders)
         mProjection = ortho(-DISTANCE*aspect/zoom,DISTANCE*aspect/zoom, -DISTANCE/zoom, DISTANCE/zoom,-3*DISTANCE/zoom,3*DISTANCE/zoom);
     }
 
-    function uploadModelView(p)
+    function uploadModelView()
     {
-        gl.uniformMatrix4fv(gl.getUniformLocation(p, "mModelView"), false, flatten(modelView()));
+        gl.uniformMatrix4fv(gl.getUniformLocation(program, "mModelView"), false, flatten(modelView()));
     }
+
 
     //tanque todo
     function tank(){
@@ -160,6 +166,8 @@ function setup(shaders)
      //conjunto que roda
      function headSet(){
 
+        multRotationY(rotationHead);
+
         pushMatrix();
             head();
         popMatrix();
@@ -177,6 +185,8 @@ function setup(shaders)
     //ligacao cubo com cilindro
     function canon(){
 
+        multRotationX(rotationCannon);
+
         pushMatrix();
             cube();
         popMatrix();
@@ -193,7 +203,7 @@ function setup(shaders)
 
         multScale([1/6,2.6,1/6]);
 
-        uploadModelView(program);
+        uploadModelView();
 
         CYLINDER.draw(gl, program, mode);
     }
@@ -205,7 +215,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         CUBE.draw(gl, program, mode);
     }
@@ -217,7 +227,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         CYLINDER.draw(gl, program, mode);
     }
@@ -229,7 +239,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(255/256,128/256,0.0,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         CYLINDER.draw(gl, program, mode);
     }
@@ -254,7 +264,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         CUBE.draw(gl, program, mode);
     }
@@ -266,7 +276,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         CUBE.draw(gl, program, mode);
 
@@ -324,7 +334,7 @@ function setup(shaders)
         multRotationZ(-90);
         multScale([1/4,4,1/4]);
 
-        uploadModelView(program);
+        uploadModelView();
 
         CYLINDER.draw(gl, program, mode);
     }
@@ -347,7 +357,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.5,0.5,0.5,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         TORUS.draw(gl, program, mode);
     }
@@ -358,7 +368,7 @@ function setup(shaders)
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
 
-        uploadModelView(program);
+        uploadModelView();
 
         SPHERE.draw(gl, program, mode);
     }
@@ -367,7 +377,7 @@ function setup(shaders)
 
     function tiles(){
 
-        uploadModelView(program);
+        uploadModelView();
 
         CUBE.draw(gl, program, mode);
 
