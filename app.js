@@ -54,17 +54,19 @@ function setup(shaders)
     document.onkeydown = function(event) {
         switch(event.key) {
             case 'w':
-                if(rotationCannon<60){
-                     rotationCannon +=2;
+                if(rotationCannon>-60){
+                    rotationCannon -=2;
                 }
+               console.log(rotationCannon);
                 break;
             case 'W':
                 mode = gl.LINES;
                 break;
             case 's':
-                if(rotationCannon>-12){
-                    rotationCannon -=2;
-                }
+                if(rotationCannon<16){
+                    rotationCannon +=2;
+               }
+               console.log(rotationCannon);
                 break;
             case 'S':
                 mode = gl.TRIANGLES;
@@ -198,7 +200,7 @@ function setup(shaders)
             cube();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.2,1.3]);
+            multTranslation([0,0.2,1.35]);
             pipe();
         popMatrix();
     }
