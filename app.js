@@ -23,10 +23,10 @@ let movement = 0;
 let zoom = 1.0;
 const DISTANCE = 5.0;
 
-let lookat1 = lookAt([0,0,-DISTANCE], [0,0,0], [0,1,0]);
+let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
-let lookat3 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
-let lookat4 = lookAt([-DISTANCE,DISTANCE,-DISTANCE], [0,0,0], [0,1,0]);
+let lookat3 = lookAt([DISTANCE,0,0], [0,0,0], [0,1,0]);
+let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 
 let lookat = lookat3;
 
@@ -78,18 +78,15 @@ function setup(shaders)
             case 'SPACE':
                 
                 break;
-            case 'ArrowDown':
-                if(movement<8){
-                    movement+=0.1;
-                }
-               
-                console.log(movement);
-                break;
             case 'ArrowUp':
-                if(movement>-8){
-                    movement-=0.1;
+                if(movement<8){
+                    movement+=0.05;
                 }
-                console.log(movement);
+                break;
+            case 'ArrowDown':
+                if(movement>-8){
+                    movement-=0.05;
+                }
                 break;
             case '1':
                 lookat = lookat1;
@@ -182,11 +179,11 @@ function setup(shaders)
             head();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.5,-0.5]);
+            multTranslation([0,0.5,0.5]);
             atenna();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0,-1]);
+            multTranslation([0,0,1]);
             canon();
         popMatrix();
     }
@@ -201,7 +198,7 @@ function setup(shaders)
             cube();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.1,-1.4]);
+            multTranslation([0,0.2,1.3]);
             pipe();
         popMatrix();
     }
@@ -209,7 +206,7 @@ function setup(shaders)
       //cilindro para disparar
       function pipe(){
 
-        multRotationX(-85)
+        multRotationX(80)
 
         multScale([1/6,2.6,1/6]);
 
