@@ -30,7 +30,7 @@ let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
 let lookat3 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 
-let mView = mat4();
+let mView = lookat3;
 
 function setup(shaders)
 {
@@ -87,24 +87,16 @@ function setup(shaders)
                 }
                 break;
             case '1':
-                //loadMatrix(lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]));
-                mView = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
-                loadMatrix(mView);
+                mView = lookat1;
                 break;
             case '2':
-                //loadMatrix(lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]));
-                mView = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
-                loadMatrix(mView);
+                mView = lookat2;
                 break;
             case '3':
-                //loadMatrix(lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]));
-                mView = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);;
-                loadMatrix(mView);
+                mView = lookat3;
                 break;
             case '4':
-                //loadMatrix(lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]));
-                mView = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
-                loadMatrix(mView);
+                mView = lookat4;
                 break;
             case '+':
                 if(zoom<30){
@@ -214,8 +206,6 @@ function setup(shaders)
 
         if(shoot){
             pushMatrix();
-                //addBullet(timestamp);
-                
                 addBullet(timestamp);
             popMatrix();
 
@@ -227,20 +217,12 @@ function setup(shaders)
 
     function addBullet(timestamp){
 
-        let x = modelView();
+        //let x = modelView();
 
         multTranslation([-2.6,0,0]);
 
-        //multTranslation([-2.6,0,-5.0]);
-        //bullet();
-
-        console.log(mView);
-
         let pos = mult(inverse(mView), modelView());
-        //let pos = modelView();
-        let vel = subtract(modelView(), x);
-
-        console.log(pos);
+        let vel = normalMatrix(modelView());
 
         bullets.push({posicao: pos, velocidade: vel, tempo: timestamp});
 
@@ -505,7 +487,7 @@ function setup(shaders)
         gl.useProgram(program);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
-        //loadMatrix(mView);
+        loadMatrix(mView);
 
         pushMatrix();
             drawTiles();
@@ -518,8 +500,8 @@ function setup(shaders)
         
         for(let i = 0; i < bullets.length; i++){
              pushMatrix();
-                console.log(bullets[i].posicao);
-                loadMatrix(bullets[i].posicao);
+                //console.log(bullets[i].posicao);
+                loadMatrix(mult(mView, bullets[i].posicao));
                 bullet();
              popMatrix();
         }
