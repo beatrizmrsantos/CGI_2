@@ -1,11 +1,12 @@
 import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
-import { ortho, lookAt, flatten, vec4, mult, subtract, add, normalMatrix, normalize, inverse, mat4 } from "../../libs/MV.js";
+import { ortho, lookAt, flatten, vec4, mult, subtract, add, normalMatrix, normalize, inverse, mat4, transpose } from "../../libs/MV.js";
 import {modelView, loadMatrix, multMatrix, multRotationY, multRotationX, multRotationZ, multScale, multTranslation, pushMatrix, popMatrix} from "../../libs/stack.js";
 
 import * as SPHERE from '../../libs/sphere.js';
 import * as CYLINDER from '../../libs/cylinder.js';
 import * as CUBE from '../../libs/cube.js';
 import * as TORUS from '../../libs/torus.js';
+import { translate } from "./libs/MV.js";
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -21,6 +22,7 @@ let movement = 0;
 let shoot = false;
 let bullets = [];
 let g = (1/2)*9.8;
+let x;
 
 let zoom = 1.0;
 const DISTANCE = 5.0;
@@ -201,6 +203,7 @@ function setup(shaders)
         popMatrix();
         pushMatrix();
             multTranslation([-1.4,0,0]);
+            x = mult(inverse(mView), modelView());
             pipe();
         popMatrix();
 
@@ -217,14 +220,16 @@ function setup(shaders)
 
     function addBullet(timestamp){
 
-        //let x = modelView();
+        
 
         multTranslation([-2.6,0,0]);
 
         let pos = mult(inverse(mView), modelView());
-        let vel = normalMatrix(modelView());
+        let vel1 = subtract(pos,x);
+       //let vel2 = normalMatrix(vel1, false);
+        //console.log(vel1);
 
-        bullets.push({posicao: pos, velocidade: vel, tempo: timestamp});
+        bullets.push({posicao: pos, velocidade: vel1, tempo: timestamp});
 
     }
 
@@ -460,12 +465,15 @@ function setup(shaders)
         for(let i = 0; i < bullets.length; i++){
             time = mat4*(timestamp - bullets[i].time);
             
-            let velTime= bullets[i].velocidade*time;
-            console.log(velTime);
-            let gravity = mat4*(g*time*time);
+            //let velTime= mult(bullets[i].velocidade,time);
+            //console.log(velTime);
+            //let gravity = mat4*(g*time*time);
 
-            let posfinal = add(add(bullets[i].posicao, velTime), gravity);
+           // let posfinal = add(bullets[i].posicao, velTime);
+          // console.log(bullets[i].posicao);
+           // console.log(bullets[i].velocidade);
             
+            let posfinal = add(bullets[i].velocidade,bullets[i].posicao);
 
             bullets[i].posicao = posfinal;
             //bullets[i].velocidade ;
@@ -507,7 +515,7 @@ function setup(shaders)
         }
         
         
-        //calc(timestamp);
+        calc(timestamp);
         
 
 
