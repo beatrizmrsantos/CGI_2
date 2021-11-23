@@ -6,7 +6,7 @@ import * as SPHERE from '../../libs/sphere.js';
 import * as CYLINDER from '../../libs/cylinder.js';
 import * as CUBE from '../../libs/cube.js';
 import * as TORUS from '../../libs/torus.js';
-import { translate } from "./libs/MV.js";
+import { scalem, translate } from "./libs/MV.js";
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -21,7 +21,9 @@ let rotationHead = 0;
 let movement = 0;
 let shoot = false;
 let bullets = [];
-let g = (1/2)*9.8;
+let t = translate(0,-0.008,0); 
+let acelaration = subtract(t,mat4());
+let scaleVelocity = scalem(0.2,0.2,0.2);
 let x;
 
 let zoom = 1.0;
@@ -204,6 +206,7 @@ function setup(shaders)
         pushMatrix();
             multTranslation([-1.4,0,0]);
             x = mult(inverse(mView), modelView());
+           //x = modelView();
             pipe();
         popMatrix();
 
@@ -220,14 +223,11 @@ function setup(shaders)
 
     function addBullet(timestamp){
 
-        
-
-        multTranslation([-2.6,0,0]);
+        multTranslation([-2.75,0,0]);
 
         let pos = mult(inverse(mView), modelView());
-        let vel1 = subtract(pos,x);
-       //let vel2 = normalMatrix(vel1, false);
-        //console.log(vel1);
+        let vel1 = mult(scaleVelocity, subtract(pos,x));
+        //let vel2 = normalMatrix(vel1, false);
 
         bullets.push({posicao: pos, velocidade: vel1, tempo: timestamp});
 
@@ -463,24 +463,18 @@ function setup(shaders)
     function calc(timestamp){
 
         for(let i = 0; i < bullets.length; i++){
-            time = mat4*(timestamp - bullets[i].time);
-            
-            //let velTime= mult(bullets[i].velocidade,time);
-            //console.log(velTime);
-            //let gravity = mat4*(g*time*time);
-
-           // let posfinal = add(bullets[i].posicao, velTime);
-          // console.log(bullets[i].posicao);
-           // console.log(bullets[i].velocidade);
+            //time = timestamp - bullets[i].time;
             
             let posfinal = add(bullets[i].velocidade,bullets[i].posicao);
 
             bullets[i].posicao = posfinal;
-            //bullets[i].velocidade ;
+            bullets[i].velocidade = add(bullets[i].velocidade, acelaration);
+
+            if(bullets[i].posicao[1][3] <= 0.1){
+                bullets.splice(i,1);
+            }
         }
         
-
-
     }
 
    
@@ -507,8 +501,8 @@ function setup(shaders)
 
         
         for(let i = 0; i < bullets.length; i++){
+
              pushMatrix();
-                //console.log(bullets[i].posicao);
                 loadMatrix(mult(mView, bullets[i].posicao));
                 bullet();
              popMatrix();
