@@ -1,12 +1,11 @@
 import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
-import { ortho, lookAt, flatten, vec4 } from "../../libs/MV.js";
+import { ortho, lookAt, flatten, vec4, mult, subtract, add, normalMatrix, normalize, inverse, mat4 } from "../../libs/MV.js";
 import {modelView, loadMatrix, multMatrix, multRotationY, multRotationX, multRotationZ, multScale, multTranslation, pushMatrix, popMatrix} from "../../libs/stack.js";
 
 import * as SPHERE from '../../libs/sphere.js';
 import * as CYLINDER from '../../libs/cylinder.js';
 import * as CUBE from '../../libs/cube.js';
 import * as TORUS from '../../libs/torus.js';
-import { rotateY, rotateZ, scale } from "./libs/MV.js";
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -21,16 +20,17 @@ let rotationHead = 0;
 let movement = 0;
 let shoot = false;
 let bullets = [];
+let g = (1/2)*9.8;
 
 let zoom = 1.0;
 const DISTANCE = 5.0;
 
-/*let lookat1 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
+let lookat1 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
 let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
-let lookat3 = lookAt([DISTANCE,0,0], [0,0,0], [0,1,0]);
+let lookat3 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 
-let lookat = lookat3;*/
+let mView = mat4();
 
 function setup(shaders)
 {
@@ -75,7 +75,6 @@ function setup(shaders)
                 break;
             case ' ':
                 shoot = true;
-                console.log(shoot);
                 break;
             case 'ArrowDown':
                 if(movement<8){
@@ -88,20 +87,24 @@ function setup(shaders)
                 }
                 break;
             case '1':
-                loadMatrix(lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]));
-                //lookat = lookat1;
+                //loadMatrix(lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]));
+                mView = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
+                loadMatrix(mView);
                 break;
             case '2':
-                loadMatrix(lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]));
-                //lookat = lookat2;
+                //loadMatrix(lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]));
+                mView = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
+                loadMatrix(mView);
                 break;
             case '3':
-                loadMatrix(lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]));
-                //lookat = lookat3;
+                //loadMatrix(lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]));
+                mView = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);;
+                loadMatrix(mView);
                 break;
             case '4':
-                loadMatrix(lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]));
-                //lookat = lookat4;
+                //loadMatrix(lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]));
+                mView = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
+                loadMatrix(mView);
                 break;
             case '+':
                 if(zoom<30){
@@ -150,7 +153,7 @@ function setup(shaders)
 
 
     //tanque todo
-    function tank(){
+    function tank(timestamp){
 
         multTranslation([movement,0,0]);
 
@@ -159,25 +162,25 @@ function setup(shaders)
         popMatrix();
         pushMatrix();
             multTranslation([0, 0.27, 0]);
-            upperBody();
+            upperBody(timestamp);
         popMatrix();
     }
 
     //corpo superior do tanque
-    function upperBody(){
+    function upperBody(timestamp){
         
         pushMatrix();
             body();
         popMatrix();
         pushMatrix();
             multTranslation([0,1.75,0]);
-            headSet();
+            headSet(timestamp);
         popMatrix();
 
     }
 
      //conjunto que roda
-     function headSet(){
+     function headSet(timestamp){
 
         multRotationY(rotationHead);
 
@@ -190,14 +193,14 @@ function setup(shaders)
         popMatrix();
         pushMatrix();
             multTranslation([-1,0,0]);
-            canon();
+            canon(timestamp);
         popMatrix();
        
     }
 
 
     //ligacao cubo com cilindro
-    function canon(){
+    function canon(timestamp){
 
         multRotationZ(rotationCannon);
 
@@ -206,22 +209,40 @@ function setup(shaders)
         popMatrix();
         pushMatrix();
             multTranslation([-1.4,0,0]);
-            bulletPipe();
-        popMatrix();
-    }
-
-    //pipe com o projetil
-    function bulletPipe(){
-
-        multRotationZ(90)
-
-        pushMatrix();
             pipe();
         popMatrix();
-        pushMatrix();
-            multTranslation([0,1.225,0]);
-            bullet();
-        popMatrix();
+
+        if(shoot){
+            pushMatrix();
+                //addBullet(timestamp);
+                
+                addBullet(timestamp);
+            popMatrix();
+
+            shoot = false;
+        }
+       
+    }
+
+
+    function addBullet(timestamp){
+
+        let x = modelView();
+
+        multTranslation([-2.6,0,0]);
+
+        //multTranslation([-2.6,0,-5.0]);
+        //bullet();
+
+        console.log(mView);
+
+        let pos = mult(inverse(mView), modelView());
+        //let pos = modelView();
+        let vel = subtract(modelView(), x);
+
+        console.log(pos);
+
+        bullets.push({posicao: pos, velocidade: vel, tempo: timestamp});
 
     }
 
@@ -240,6 +261,7 @@ function setup(shaders)
       //cilindro para disparar
       function pipe(){
 
+        multRotationZ(90);
         multScale([1/6,2.6,1/6]);
 
         uploadModelView();
@@ -451,11 +473,30 @@ function setup(shaders)
         }
     }
 
+    function calc(timestamp){
+
+        for(let i = 0; i < bullets.length; i++){
+            time = mat4*(timestamp - bullets[i].time);
+            
+            let velTime= bullets[i].velocidade*time;
+            console.log(velTime);
+            let gravity = mat4*(g*time*time);
+
+            let posfinal = add(add(bullets[i].posicao, velTime), gravity);
+            
+
+            bullets[i].posicao = posfinal;
+            //bullets[i].velocidade ;
+        }
+        
+
+
+    }
+
    
     function render(timestamp)
     {
 
-        if(animation) time += speed;
         window.requestAnimationFrame(render);
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -464,16 +505,27 @@ function setup(shaders)
         gl.useProgram(program);
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "mProjection"), false, flatten(mProjection));
     
-        //loadMatrix(lookat);
+        //loadMatrix(mView);
 
         pushMatrix();
             drawTiles();
         popMatrix();
         pushMatrix();
             multTranslation([0,0.51,0])
-            tank();
+            tank(timestamp);
         popMatrix();
 
+        
+        for(let i = 0; i < bullets.length; i++){
+             pushMatrix();
+                console.log(bullets[i].posicao);
+                loadMatrix(bullets[i].posicao);
+                bullet();
+             popMatrix();
+        }
+        
+        
+        //calc(timestamp);
         
 
 
