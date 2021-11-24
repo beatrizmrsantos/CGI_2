@@ -1,5 +1,5 @@
 import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
-import { ortho, lookAt, flatten, vec4, mult, subtract, add, normalMatrix, normalize, inverse, mat4, transpose } from "../../libs/MV.js";
+import { ortho, lookAt, flatten, vec4, mult, subtract, add, normalMatrix, normalize, inverse, mat4, transpose, scale } from "../../libs/MV.js";
 import {modelView, loadMatrix, multMatrix, multRotationY, multRotationX, multRotationZ, multScale, multTranslation, pushMatrix, popMatrix} from "../../libs/stack.js";
 
 import * as SPHERE from '../../libs/sphere.js';
@@ -12,21 +12,22 @@ import { scalem, translate } from "./libs/MV.js";
 let gl;
 let program;
 
-let time = 0;           // Global simulation time in days
-let speed = 1/60;         // Speed (how many days added to time on each render pass
+let a = (9.8)/800;        
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
-let animation = true;   // Animation is running
 let rotationCannon = 0;
 let rotationHead = 0;
 let movement = 0;
-let shoot = false;
-let bullets = [];
-let t = translate(0,-0.008,0); 
-let acelaration = subtract(t,mat4());
-let scaleVelocity = scalem(0.2,0.2,0.2);
+let zoom = 1.0;
 let x;
 
-let zoom = 1.0;
+let shoot = false;
+
+let bullets = [];
+
+let t = translate(0,-a,0); 
+let acelaration = subtract(t,mat4());
+let scaleVelocity = scalem(0.2,0.2,0.2);
+
 const DISTANCE = 5.0;
 
 let lookat1 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
@@ -463,12 +464,14 @@ function setup(shaders)
     function calc(timestamp){
 
         for(let i = 0; i < bullets.length; i++){
-            //time = timestamp - bullets[i].time;
+            //let time = timestamp - bullets[i].tempo;
+            //let a = mat4(scale(time,acelaration));
             
             let posfinal = add(bullets[i].velocidade,bullets[i].posicao);
 
             bullets[i].posicao = posfinal;
             bullets[i].velocidade = add(bullets[i].velocidade, acelaration);
+            //bullets[i].tempo = timestamp;
 
             if(bullets[i].posicao[1][3] <= 0.1){
                 bullets.splice(i,1);
