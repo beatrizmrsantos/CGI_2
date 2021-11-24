@@ -157,10 +157,8 @@ function setup(shaders)
         pushMatrix();
             lowerBody();
         popMatrix();
-        pushMatrix();
             multTranslation([0, 0.27, 0]);
             upperBody(timestamp);
-        popMatrix();
     }
 
     //corpo superior do tanque
@@ -169,10 +167,8 @@ function setup(shaders)
         pushMatrix();
             body();
         popMatrix();
-        pushMatrix();
             multTranslation([0,1.75,0]);
             headSet(timestamp);
-        popMatrix();
 
     }
 
@@ -188,10 +184,8 @@ function setup(shaders)
             multTranslation([-0.5,0.5,0]);
             atenna();
         popMatrix();
-        pushMatrix();
             multTranslation([-1,0,0]);
             canon(timestamp);
-        popMatrix();
        
     }
 
@@ -207,14 +201,11 @@ function setup(shaders)
         pushMatrix();
             multTranslation([-1.4,0,0]);
             x = mult(inverse(mView), modelView());
-           //x = modelView();
             pipe();
         popMatrix();
 
         if(shoot){
-            pushMatrix();
-                addBullet(timestamp);
-            popMatrix();
+            addBullet(timestamp);
 
             shoot = false;
         }
@@ -227,10 +218,9 @@ function setup(shaders)
         multTranslation([-2.75,0,0]);
 
         let pos = mult(inverse(mView), modelView());
-        let vel1 = mult(scaleVelocity, subtract(pos,x));
-        //let vel2 = normalMatrix(vel1, false);
+        let vel = mult(scaleVelocity, subtract(pos,x));
 
-        bullets.push({posicao: pos, velocidade: vel1, tempo: timestamp});
+        bullets.push({posicao: pos, velocidade: vel, tempo: timestamp});
 
     }
 
@@ -269,7 +259,7 @@ function setup(shaders)
         CUBE.draw(gl, program, mode);
     }
 
-    //cilindro pequeno
+    //cilindro pequeno em cima do tanque
     function atenna(){
 
         multScale([0.7,0.3,0.7]);
@@ -302,10 +292,9 @@ function setup(shaders)
         pushMatrix();
             bodySmall();
         popMatrix();
-        pushMatrix();
             multTranslation([0,0.8,0])
             bodyBig();
-        popMatrix();
+    
     }
 
     //cubo grande do corpo do tanque
@@ -352,10 +341,8 @@ function setup(shaders)
             multTranslation([-1,0,0]);
             axisWheels();
         popMatrix();
-        pushMatrix();
             multTranslation([-2,0,0]);
             axisWheels();
-        popMatrix();
 
 
     }
@@ -374,11 +361,8 @@ function setup(shaders)
         pushMatrix();
             axis();
         popMatrix();
-        pushMatrix();
             multTranslation([0,0,-2.2]);
-            wheel();
-        popMatrix();  
-
+            wheel(); 
 
     }
 
@@ -399,8 +383,8 @@ function setup(shaders)
 
         pushMatrix();
             torus();
-            sphere();
         popMatrix();
+            sphere();
         
     }
 
@@ -505,16 +489,13 @@ function setup(shaders)
         
         for(let i = 0; i < bullets.length; i++){
 
-             pushMatrix();
-                loadMatrix(mult(mView, bullets[i].posicao));
-                bullet();
-             popMatrix();
+            loadMatrix(mult(mView, bullets[i].posicao));
+            bullet();
         }
         
         
         calc(timestamp);
         
-
 
     }
 }
