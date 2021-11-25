@@ -46,6 +46,9 @@ const CYLINDER_HEIGHT = 1;
 //constantes que se pode mudar
 const WHEEL_SIZE = 1;
 const TANK_UPPERBODY_SIZE = 1;
+const HEAD_SIZE = 1;
+const SIZE_ANTENNA=1;
+const SIZE_CANNON= 1;
 
 
 const WHEEL_THICK = 1.5;
@@ -79,11 +82,22 @@ const TANK_UPPERBODY_LENGHT = 3*TANK_UPPERBODY_SIZE;
 const TRANSLATION_TANK = WHEEL_SIZE*AXIS_WHEEL_SIZE*TORUS_RADIUS/2;
 const TRANSLATION_BODY_BIG = TANK_UPPERBODY_HEIGHT/2 + TANK_LOWERBODY_HEIGHT/2;
 
-const TANK_BODY_SIZE = 1;
+const HEAD_CYLINDER_HEIGHT=0.7*HEAD_SIZE;
+const HEAD_CYLINDER_RADIUS=2*HEAD_SIZE;
 
-//const HEAD_TANK_SIZE =
-//const CANON_SIZE = 
+const TRANSLATION_HEAD=TANK_UPPERBODY_HEIGHT + TANK_LOWERBODY_HEIGHT/2 +HEAD_CYLINDER_HEIGHT/2;
 
+
+const ANTENNA_HEIGHT = 0.3*SIZE_ANTENNA;
+const ANTENNA_RADIUS = 0.7*SIZE_ANTENNA;
+const TRANSLATION_ANTENNA = HEAD_CYLINDER_HEIGHT/2 + ANTENNA_HEIGHT/2 ;
+
+
+const CANNON_SQUARE = 0.4* SIZE_CANNON;
+const CANNON_PIPE_RADIUS = 1/6* SIZE_CANNON;
+const CANNON_HEIGHT = 2.6 *SIZE_CANNON;
+const TRANSLATION_SQUARE = HEAD_CYLINDER_RADIUS/2;
+const TRANSLATION_CANNON = CANNON_HEIGHT/2;
 
 
 function setup(shaders)
@@ -216,7 +230,7 @@ function setup(shaders)
         pushMatrix();
             body();
         popMatrix();
-            multTranslation([0,1.75,0]);
+            multTranslation([0,TRANSLATION_HEAD,0]);
             headSet(timestamp);
 
     }
@@ -230,10 +244,10 @@ function setup(shaders)
             head();
         popMatrix();
         pushMatrix();
-            multTranslation([-0.5,0.5,0]);
+            multTranslation([-TRANSLATION_ANTENNA,TRANSLATION_ANTENNA,0]);
             atenna();
         popMatrix();
-            multTranslation([-1,0,0]);
+            multTranslation([-TRANSLATION_SQUARE,0,0]);
             canon(timestamp);
        
     }
@@ -248,7 +262,7 @@ function setup(shaders)
             cube();
         popMatrix();
         pushMatrix();
-            multTranslation([-1.4,0,0]);
+            multTranslation([-TRANSLATION_CANNON,0,0]);
             x = mult(inverse(mView), modelView());
             pipe();
         popMatrix();
@@ -264,7 +278,7 @@ function setup(shaders)
 
     function addBullet(timestamp){
 
-        multTranslation([-2.75,0,0]);
+        multTranslation([-CANNON_HEIGHT,0,0]);
 
         let pos = mult(inverse(mView), modelView());
         let vel = mult(scaleVelocity, subtract(pos,x));
@@ -275,7 +289,7 @@ function setup(shaders)
 
     function bullet(){
 
-        multScale([1/5,1/5,1/5]);
+        multScale([CANNON_PIPE_RADIUS,CANNON_PIPE_RADIUS,CANNON_PIPE_RADIUS]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,0.0,0.0,1.0)));
 
@@ -289,7 +303,7 @@ function setup(shaders)
       function pipe(){
 
         multRotationZ(90);
-        multScale([1/6,2.6,1/6]);
+        multScale([CANNON_PIPE_RADIUS,CANNON_HEIGHT,CANNON_PIPE_RADIUS]);
 
         uploadModelView();
 
@@ -299,7 +313,7 @@ function setup(shaders)
     //cubo de ligacao canhao e body
     function cube(){
 
-        multScale([0.4,0.4,0.4]);
+        multScale([CANNON_SQUARE,CANNON_SQUARE,CANNON_SQUARE]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
 
@@ -311,7 +325,7 @@ function setup(shaders)
     //cilindro pequeno em cima do tanque
     function atenna(){
 
-        multScale([0.7,0.3,0.7]);
+        multScale([ANTENNA_RADIUS,ANTENNA_HEIGHT,ANTENNA_RADIUS]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,0.0,1.0)));
 
@@ -323,7 +337,7 @@ function setup(shaders)
     //cilindro grande
     function head(){
 
-        multScale([2,0.7,2]);
+        multScale([HEAD_CYLINDER_RADIUS,HEAD_CYLINDER_HEIGHT,HEAD_CYLINDER_RADIUS]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(255/256,128/256,0.0,1.0)));
 
