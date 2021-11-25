@@ -11,19 +11,19 @@ import { scalem, translate } from "./libs/MV.js";
 /** @type WebGLRenderingContext */
 let gl;
 let program;
-
-let a = (9.8)/800;        
-let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
-let rotationCannon = 0;
-let rotationHead = 0;
-let movement = 0;
+     
+let mode;                 // Drawing mode (gl.LINES or gl.TRIANGLES)
+let rotationCannon = 0;   //rotacao do canhao do tanque no ecra
+let rotationHead = 0;    //rotacao da cabeca do tanque no ecra
+let movement = 0;       //tranlacao no ecra
 let zoom = 1.0;
-let x;
+let x;                 //ponto do centro do cilindro do canhao
 
 let shoot = false;
-
 let bullets = [];
 
+//vetor acelaracao
+const a = (9.8)/800; 
 let t = translate(0,-a,0); 
 let acelaration = subtract(t,mat4());
 let scaleVelocity = scalem(0.2,0.2,0.2);
@@ -34,8 +34,43 @@ let lookat1 = lookAt([-DISTANCE,0,0], [0,0,0], [0,1,0]);
 let lookat2 = lookAt([0,DISTANCE,0.0001], [0,0,0], [0,1,0]);
 let lookat3 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
-
 let mView = lookat3;
+
+
+const TORUS_RADIUS = 0.7;
+const SPERE_RADIUS = 0.5;
+const CUBE_SIZE = 1;
+const CYLINDER_RADIUS = 0.5;
+const CYLINDER_HEIGHT = 1;
+
+const WHEEL_THICK = 1.5;
+const WHEEL_HEIGHT = 1;
+const SPHERE_SIZE = 0.4;
+
+const TILE_HEIGHT = 1/6;
+const TILE_LENGHT = CUBE_SIZE;
+const TILE_WIDTH = CUBE_SIZE;
+
+const WHEEL_SIZE = 1;
+
+const TANK_LOWERBODY_LENGTH = 2;
+const TANK_LOWERBODY_WIDTH = 5;
+const TANK_LOWERBODY_HEIGHT = 1/2.5;
+
+const AXIS_WIDTH = WHEEL_SIZE*TANK_LOWERBODY_LENGTH*CUBE_SIZE*2;
+const AXIS_HEIGHT = 0.25;
+const AXIS_WHEEL_SIZE = 0.6;
+
+const WHEEL_TRANSLATION = WHEEL_SIZE*TANK_LOWERBODY_LENGTH*CUBE_SIZE + SPERE_RADIUS*SPHERE_SIZE;
+const WHEEL_AXIS_TRANSLATION_1 = WHEEL_SIZE*(TORUS_RADIUS*2)*AXIS_WHEEL_SIZE + 0.1;
+const WHEEL_AXIS_TRANSLATION_2 = WHEEL_SIZE*(TORUS_RADIUS*4)*AXIS_WHEEL_SIZE + 0.2;
+const TRANSLATION_TOP_TILES = WHEEL_SIZE*AXIS_WHEEL_SIZE*TORUS_RADIUS + (TILE_HEIGHT*CUBE_SIZE)/2;
+const TANK_BODY_SIZE = 1;
+
+//const HEAD_TANK_SIZE =
+//const CANON_SIZE = 
+
+
 
 function setup(shaders)
 {
@@ -312,7 +347,7 @@ function setup(shaders)
     //cubo pequeno do corpo do tanque
     function bodySmall(){
 
-        multScale([2,1/2.5,5]);
+        multScale([TANK_LOWERBODY_LENGTH,TANK_LOWERBODY_HEIGHT,TANK_LOWERBODY_WIDTH]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
 
@@ -330,18 +365,18 @@ function setup(shaders)
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([1,0,0]);
+            multTranslation([WHEEL_AXIS_TRANSLATION_1,0,0]);
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([2,0,0]);
+            multTranslation([WHEEL_AXIS_TRANSLATION_2,0,0]);
             axisWheels();
         popMatrix();
         pushMatrix();
-            multTranslation([-1,0,0]);
+            multTranslation([-WHEEL_AXIS_TRANSLATION_1,0,0]);
             axisWheels();
         popMatrix();
-            multTranslation([-2,0,0]);
+            multTranslation([-WHEEL_AXIS_TRANSLATION_2,0,0]);
             axisWheels();
 
 
@@ -351,17 +386,17 @@ function setup(shaders)
     function axisWheels(){
 
         multRotationZ((movement/(2*3.14*0.45))*360);
-        multScale([0.6, 0.6, 0.6]);
+        multScale([AXIS_WHEEL_SIZE, AXIS_WHEEL_SIZE, AXIS_WHEEL_SIZE]);
 
 
         pushMatrix();
-            multTranslation([0,0,2.2]);
+            multTranslation([0,0,WHEEL_TRANSLATION]);
             wheel();
         popMatrix();
         pushMatrix();
             axis();
         popMatrix();
-            multTranslation([0,0,-2.2]);
+            multTranslation([0,0,-WHEEL_TRANSLATION]);
             wheel(); 
 
     }
@@ -369,7 +404,7 @@ function setup(shaders)
     function axis(){
 
         multRotationX(90);
-        multScale([1/4,4,1/4]);
+        multScale([AXIS_HEIGHT,AXIS_WIDTH,AXIS_HEIGHT]);
 
         uploadModelView();
 
@@ -380,6 +415,7 @@ function setup(shaders)
     function wheel(){
 
         multRotationX(90);
+        multScale([WHEEL_SIZE,WHEEL_SIZE,WHEEL_SIZE]);
 
         pushMatrix();
             torus();
@@ -390,7 +426,7 @@ function setup(shaders)
 
     function torus(){
 
-        multScale([1, 1.5, 1]);
+        multScale([WHEEL_HEIGHT, WHEEL_THICK, WHEEL_HEIGHT]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.5,0.5,0.5,1.0)));
 
@@ -401,7 +437,7 @@ function setup(shaders)
 
     function sphere(){
 
-        multScale([0.4,0.4,0.4]);
+        multScale([SPHERE_SIZE,SPHERE_SIZE,SPHERE_SIZE]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
 
@@ -424,13 +460,13 @@ function setup(shaders)
 
     function drawTiles(){
 
-        multScale([1, 1/6, 1]);
+        multScale([TILE_LENGHT, TILE_HEIGHT, TILE_WIDTH]);
 
         for(let i = -10; i <= 10; i++){
             for(let j = -10; j <= 10; j++){
 
                 pushMatrix();
-                    multTranslation([i*1, 0, j*1]);
+                    multTranslation([i, 0, j]);
                    
                     if((i+j)%2==0){
                         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(1.0,1.0,1.0,1.0)));
@@ -482,7 +518,7 @@ function setup(shaders)
             drawTiles();
         popMatrix();
         pushMatrix();
-            multTranslation([0,0.51,0])
+            multTranslation([0,TRANSLATION_TOP_TILES,0])
             tank(timestamp);
         popMatrix();
 
