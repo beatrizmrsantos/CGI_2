@@ -51,24 +51,23 @@ const TILE_HEIGHT = 1/6;
 const TILE_LENGHT = CUBE_SIZE;
 const TILE_WIDTH = CUBE_SIZE;
 
-const WHEEL_SIZE = 1;
+const WHEEL_SIZE = 2;
 
-const TANK_LOWERBODY_LENGTH = 2;
-const TANK_LOWERBODY_WIDTH = 5;
+const DISTANCE_WHEELS = 2;
+
+const TANK_LOWERBODY_LENGTH = 5;
+const TANK_LOWERBODY_WIDTH = 2;
 const TANK_LOWERBODY_HEIGHT = 1/2.5;
 
-const AXIS_WIDTH = WHEEL_SIZE*TANK_LOWERBODY_LENGTH*CUBE_SIZE*2;
+const AXIS_WIDTH = WHEEL_SIZE*TANK_LOWERBODY_WIDTH*CUBE_SIZE*2;
 const AXIS_HEIGHT = 0.25;
 const AXIS_WHEEL_SIZE = 0.6;
 
-const WHEEL_TRANSLATION = WHEEL_SIZE*TANK_LOWERBODY_LENGTH*CUBE_SIZE + SPERE_RADIUS*SPHERE_SIZE;
+const WHEEL_TRANSLATION = WHEEL_SIZE*DISTANCE_WHEELS*CUBE_SIZE + SPERE_RADIUS*SPHERE_SIZE;
 const WHEEL_AXIS_TRANSLATION_1 = WHEEL_SIZE*(TORUS_RADIUS*2)*AXIS_WHEEL_SIZE + 0.1;
 const WHEEL_AXIS_TRANSLATION_2 = WHEEL_SIZE*(TORUS_RADIUS*4)*AXIS_WHEEL_SIZE + 0.2;
 const TRANSLATION_TOP_TILES = WHEEL_SIZE*AXIS_WHEEL_SIZE*TORUS_RADIUS + (TILE_HEIGHT*CUBE_SIZE)/2;
 const TANK_BODY_SIZE = 1;
-
-//const HEAD_TANK_SIZE =
-//const CANON_SIZE = 
 
 
 
@@ -190,7 +189,7 @@ function setup(shaders)
         multTranslation([movement,0,0]);
 
         pushMatrix();
-            lowerBody();
+            cubeAndWheels();
         popMatrix();
             multTranslation([0, 0.27, 0]);
             upperBody(timestamp);
@@ -322,11 +321,7 @@ function setup(shaders)
     //dois cubos juntos
     function body(){
         
-        multRotationY(90);
-
-        pushMatrix();
-            bodySmall();
-        popMatrix();
+            multRotationY(90);
             multTranslation([0,0.8,0])
             bodyBig();
     
@@ -355,6 +350,14 @@ function setup(shaders)
 
         CUBE.draw(gl, program, mode);
 
+    }
+
+    function cubeAndWheels(){
+        pushMatrix();
+            multTranslation([0,TORUS_RADIUS/2,0]);
+            bodySmall();   
+        popMatrix();
+            lowerBody();
     }
 
 
