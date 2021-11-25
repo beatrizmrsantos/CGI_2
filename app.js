@@ -11,7 +11,7 @@ import { scalem, translate } from "./libs/MV.js";
 /** @type WebGLRenderingContext */
 let gl;
 let program;
-     
+      
 let mode;                 // Drawing mode (gl.LINES or gl.TRIANGLES)
 let rotationCannon = 0;   //rotacao do canhao do tanque no ecra
 let rotationHead = 0;    //rotacao da cabeca do tanque no ecra
@@ -36,12 +36,17 @@ let lookat3 = lookAt([0,0,DISTANCE], [0,0,0], [0,1,0]);
 let lookat4 = lookAt([DISTANCE,DISTANCE,DISTANCE], [0,0,0], [0,1,0]);
 let mView = lookat3;
 
-
+//constantes de parametro dos objetos
 const TORUS_RADIUS = 0.7;
 const SPERE_RADIUS = 0.5;
 const CUBE_SIZE = 1;
 const CYLINDER_RADIUS = 0.5;
 const CYLINDER_HEIGHT = 1;
+
+//constantes que se pode mudar
+const WHEEL_SIZE = 2;
+const TANK_UPPERBODY_SIZE = 2;
+
 
 const WHEEL_THICK = 1.5;
 const WHEEL_HEIGHT = 1;
@@ -51,11 +56,7 @@ const TILE_HEIGHT = 1/6;
 const TILE_LENGHT = CUBE_SIZE;
 const TILE_WIDTH = CUBE_SIZE;
 
-const WHEEL_SIZE = 1;
-
 const TANK_LOWERBODY_LENGTH = 2;
-const TANK_LOWERBODY_WIDTH = 5;
-const TANK_LOWERBODY_HEIGHT = 1/2.5;
 
 const AXIS_WIDTH = WHEEL_SIZE*TANK_LOWERBODY_LENGTH*CUBE_SIZE*2;
 const AXIS_HEIGHT = 0.25;
@@ -65,6 +66,17 @@ const WHEEL_TRANSLATION = WHEEL_SIZE*TANK_LOWERBODY_LENGTH*CUBE_SIZE + SPERE_RAD
 const WHEEL_AXIS_TRANSLATION_1 = WHEEL_SIZE*(TORUS_RADIUS*2)*AXIS_WHEEL_SIZE + 0.1;
 const WHEEL_AXIS_TRANSLATION_2 = WHEEL_SIZE*(TORUS_RADIUS*4)*AXIS_WHEEL_SIZE + 0.2;
 const TRANSLATION_TOP_TILES = WHEEL_SIZE*AXIS_WHEEL_SIZE*TORUS_RADIUS + (TILE_HEIGHT*CUBE_SIZE)/2;
+
+const TANK_LOWERBODY_WIDTH = WHEEL_AXIS_TRANSLATION_2*2;
+const TANK_LOWERBODY_HEIGHT = WHEEL_SIZE*AXIS_WHEEL_SIZE*TORUS_RADIUS;
+
+const TANK_UPPERBODY_WIDTH = 6*TANK_UPPERBODY_SIZE;
+const TANK_UPPERBODY_HEIGHT = 1.2*TANK_UPPERBODY_SIZE;
+const TANK_UPPERBODY_LENGHT = 3*TANK_UPPERBODY_SIZE;
+
+const TRANSLATION_TANK = WHEEL_SIZE*AXIS_WHEEL_SIZE*TORUS_RADIUS/2;
+const TRANSLATION_BODY_BIG = TANK_UPPERBODY_HEIGHT/2 + TANK_LOWERBODY_HEIGHT/2;
+
 const TANK_BODY_SIZE = 1;
 
 //const HEAD_TANK_SIZE =
@@ -192,7 +204,7 @@ function setup(shaders)
         pushMatrix();
             lowerBody();
         popMatrix();
-            multTranslation([0, 0.27, 0]);
+            multTranslation([0, TRANSLATION_TANK, 0]);
             upperBody(timestamp);
     }
 
@@ -327,7 +339,7 @@ function setup(shaders)
         pushMatrix();
             bodySmall();
         popMatrix();
-            multTranslation([0,0.8,0])
+            multTranslation([0,TRANSLATION_BODY_BIG,0])
             bodyBig();
     
     }
@@ -335,7 +347,7 @@ function setup(shaders)
     //cubo grande do corpo do tanque
     function bodyBig(){
 
-        multScale([3,1.2,6]);
+        multScale([TANK_UPPERBODY_LENGHT,TANK_UPPERBODY_HEIGHT,TANK_UPPERBODY_WIDTH]);
 
         gl.uniform4fv(gl.getUniformLocation(program, "ucolor"), flatten(vec4(0.0,1.0,0.0,1.0)));
 
