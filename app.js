@@ -12,6 +12,8 @@ import { scalem, translate } from "./libs/MV.js";
 let gl;
 let program;
       
+const pi =3.14
+const round = 360;
 let mode;                 // Drawing mode (gl.LINES or gl.TRIANGLES)
 let rotationCannon = 0;   //rotacao do canhao do tanque no ecra
 let rotationHead = 0;    //rotacao da cabeca do tanque no ecra
@@ -417,7 +419,7 @@ function setup(shaders)
     //eixo com duas rodas
     function axisWheels(){
 
-        multRotationZ((movement/(2*3.14*0.45))*360);
+        multRotationZ((-movement/(2*pi*(TORUS_RADIUS/2))*round));
         multScale([AXIS_WHEEL_SIZE, AXIS_WHEEL_SIZE, AXIS_WHEEL_SIZE]);
 
 
