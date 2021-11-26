@@ -364,7 +364,7 @@ function setup(shaders)
         pushMatrix();
             bodySmall();
         popMatrix();
-            multTranslation([0,TRANSLATION_BODY_BIG,0])
+            multTranslation([0,TRANSLATION_BODY_BIG,0]);
             bodyBig();
     
     }
@@ -538,7 +538,7 @@ function setup(shaders)
     }
 
    
-    function render(timestamp)
+    function render()
     {
 
         window.requestAnimationFrame(render);
@@ -555,7 +555,7 @@ function setup(shaders)
             drawTiles();
         popMatrix();
         pushMatrix();
-            multTranslation([0,TRANSLATION_TOP_TILES,0])
+            multTranslation([0,TRANSLATION_TOP_TILES,0]);
             tank();
         popMatrix();
 
