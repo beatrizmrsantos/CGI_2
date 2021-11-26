@@ -19,7 +19,7 @@ let rotationCannon = 0;   //rotacao do canhao do tanque no ecra
 let rotationHead = 0;         //rotacao da cabeca do tanque no ecra
 let movement = 0;         //tranlacao do tanque no ecra
 let zoom = 1.0;           
-let x;                       //ponto do centro do cilindro do canhão usado para calcular o vetor velocidade                                                       inicial de cada bala
+let x;                       //ponto do centro do cilindro do canhão usado para calcular o vetor velocidade inicial de cada bala
 
 let shoot = false;     //Boolean para o clique do espaco para disparar o canhao
 let bullets = [];         //vetor de todas as balas existentes no programa
