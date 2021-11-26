@@ -24,7 +24,7 @@ let x;                       //ponto do centro do cilindro do canhão usado para
 let shoot = false;     //Boolean para o clique do espaco para disparar o canhao
 let bullets = [];         //vetor de todas as balas existentes no programa
 
-const G = 9.8;         //valor da acelaracao com o tempo
+const G = 9.8;         //valor da acelaracao 
 let t = translate(0,-G,0);    //matriz com a translação necessária para a realizao do vetor acelaracao
 let acelaration = subtract(t,mat4());    //vetor acelaracao final onde esta tudo a zero a exceção do y que tem o valor pretendido negativo de modo a simular a gravidade
 const escaleVelocity = scalem(4.5,4.5,4.5);  //escala para o vetor velocidade de modo a personaliza-la ao nosso gosto
